@@ -2,7 +2,7 @@ package com.coder.challengechapter5binar.room
 
 import android.content.Context
 
-class UserRepository(private val context: Context) {
+class UserRepository(context: Context) {
     private val mDb = AppDatabase.getInstance(context)
 
     fun checkUser(username: String, password: String): Boolean {
