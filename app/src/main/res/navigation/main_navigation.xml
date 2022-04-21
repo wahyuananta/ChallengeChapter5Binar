@@ -55,14 +55,14 @@
         android:name="com.coder.challengechapter5binar.fragment.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
-        <argument
-            android:name="dataUser"
-            app:argType="com.coder.challengechapter5binar.room.UserEntity" />
         <action
             android:id="@+id/action_profileFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <argument
+            android:name="dataUser"
+            app:argType="com.coder.challengechapter5binar.room.UserEntity" />
     </fragment>
 </navigation>
