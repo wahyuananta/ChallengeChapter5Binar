@@ -1,4 +1,4 @@
-package com.coder.challengechapter5binar.model.popularmovie
+package com.coder.challengechapter5binar.api.model
 
 
 import com.google.gson.annotations.SerializedName

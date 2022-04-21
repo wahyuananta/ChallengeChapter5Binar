@@ -1,20 +1,22 @@
-package com.coder.challengechapter5binar.model.popularmovie
+package com.coder.challengechapter5binar.api.model
 
 
 import com.google.gson.annotations.SerializedName
 
-data class TopRatedMovieResponse(
+data class UpcomingMoviesResponse(
+    @SerializedName("dates")
+    val dates: Dates,
     @SerializedName("page")
     val page: Int,
     @SerializedName("results")
-    val resultTopRatedMovieResponses: List<ResultTopRatedMovieResponse>,
+    val resultsUpcomingMovieResponse: List<ResultUpcomingMovieResponse>,
     @SerializedName("total_pages")
     val totalPages: Int,
     @SerializedName("total_results")
     val totalResults: Int
 )
 
-data class ResultTopRatedMovieResponse(
+data class ResultUpcomingMovieResponse(
     @SerializedName("adult")
     val adult: Boolean,
     @SerializedName("backdrop_path")
@@ -40,7 +42,14 @@ data class ResultTopRatedMovieResponse(
     @SerializedName("video")
     val video: Boolean,
     @SerializedName("vote_average")
-    val voteAverage: Int,
+    val voteAverage: Double,
     @SerializedName("vote_count")
     val voteCount: Int
+)
+
+data class Dates(
+    @SerializedName("maximum")
+    val maximum: String,
+    @SerializedName("minimum")
+    val minimum: String
 )

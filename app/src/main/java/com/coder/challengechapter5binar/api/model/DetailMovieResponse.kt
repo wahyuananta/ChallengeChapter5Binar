@@ -1,9 +1,9 @@
-package com.coder.challengechapter5binar.model.popularmovie
+package com.coder.challengechapter5binar.api.model
 
 
 import com.google.gson.annotations.SerializedName
 
-data class DetailPopularMovieResponse(
+data class DetailMovieResponse(
     @SerializedName("adult")
     val adult: Boolean,
     @SerializedName("backdrop_path")
