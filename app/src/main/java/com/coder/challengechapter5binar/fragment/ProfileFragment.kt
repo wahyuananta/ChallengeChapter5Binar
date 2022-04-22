@@ -58,9 +58,9 @@ class ProfileFragment : Fragment() {
                 val result = repository.updateUser(user)
                 runBlocking(Dispatchers.Main) {
                     if (result != 0){
-                        Toast.makeText(requireContext(), "User berhasil diupdate", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Profile berhasil diupdate", Toast.LENGTH_SHORT).show()
                     }else{
-                        Toast.makeText(requireContext(), "User gagal diupdate", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Profile gagal diupdate", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
