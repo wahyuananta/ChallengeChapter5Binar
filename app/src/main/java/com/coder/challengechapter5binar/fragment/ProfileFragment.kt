@@ -1,12 +1,17 @@
 package com.coder.challengechapter5binar.fragment
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -15,9 +20,11 @@ import com.coder.challengechapter5binar.databinding.FragmentProfileBinding
 import com.coder.challengechapter5binar.datastore.UserDataStoreManager
 import com.coder.challengechapter5binar.room.UserEntity
 import com.coder.challengechapter5binar.room.UserRepository
+import com.github.dhaval2404.imagepicker.ImagePicker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -25,6 +32,27 @@ class ProfileFragment : Fragment() {
     private lateinit var repository: UserRepository
     private val args : ProfileFragmentArgs by navArgs()
     private lateinit var pref: UserDataStoreManager
+    private var imageUri: Uri? = null
+
+    private val startForProfileImageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    //Image Uri will not be null for RESULT_OK
+                    imageUri = data?.data
+                    loadImage(imageUri)
+
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(activity, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,22 +65,27 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        preferences = requireContext().getSharedPreferences(LOGINUSERNAME, Context.MODE_PRIVATE)
         repository = UserRepository(requireContext())
 
         pref = UserDataStoreManager(requireContext())
 
+        binding.profileImage.setImageURI(args.dataUser.uri.toString().toUri())
         binding.etUsername.setText(args.dataUser.username)
         binding.etUsername.isFocusable = false
         binding.etEmail.setText(args.dataUser.email)
         binding.etPassword.setText(args.dataUser.password)
+
+        binding.profileImage.setOnClickListener {
+            openImagePicker()
+        }
 
         binding.btnUpdate.setOnClickListener {
             val user = UserEntity(
                 args.dataUser.id,
                 binding.etUsername.text.toString(),
                 binding.etEmail.text.toString(),
-                binding.etPassword.text.toString()
+                binding.etPassword.text.toString(),
+                imageUri.toString()
             )
             lifecycleScope.launch(Dispatchers.IO) {
                 val result = repository.updateUser(user)
@@ -88,6 +121,31 @@ class ProfileFragment : Fragment() {
                 .show()
         }
 
+    }
+
+    private fun openImagePicker() {
+        ImagePicker.with(this)
+            .crop()
+            .saveDir(
+                File(
+                    requireContext().externalCacheDir,
+                    "ImagePicker"
+                )
+            ) //Crop image(Optional), Check Customization for more option
+            .compress(1024)            //Final image size will be less than 1 MB(Optional)
+            .maxResultSize(
+                1080,
+                1080
+            )    //Final image resolution will be less than 1080 x 1080(Optional)
+            .createIntent { intent ->
+                startForProfileImageResult.launch(intent)
+            }
+    }
+
+    private fun loadImage(uri: Uri?) {
+        uri?.let {
+            binding.profileImage.setImageURI(it)
+        }
     }
 
 }

@@ -45,6 +45,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_image"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/default_profile"
+        app:civ_border_width="2dp"
+        app:civ_border_color="#FFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_update"/>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/il_username"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -58,7 +71,7 @@
         app:boxCornerRadiusTopEnd="20dp"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="50dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_update">
+        app:layout_constraintTop_toBottomOf="@id/profile_image">
 
         <com.google.android.material.textfield.TextInputEditText
             style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
@@ -129,45 +142,5 @@
         app:cornerRadius="16dp"
         app:layout_constraintTop_toBottomOf="@id/il_password"
         android:layout_marginTop="16dp"/>
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/iv_logo"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:tint="@color/colorAccent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/linear_tv"
-        app:srcCompat="@drawable/ic_movie" />
-
-    <LinearLayout
-        android:id="@+id/linear_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="40dp"
-        app:layout_constraintEnd_toEndOf="@+id/iv_logo"
-        app:layout_constraintStart_toStartOf="@+id/iv_logo"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:id="@+id/tv_movie"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_regular"
-            android:text="@string/movie"
-            android:textColor="@color/white"
-            android:textSize="28sp" />
-
-        <TextView
-            android:id="@+id/tv_app"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_bold"
-            android:text="@string/app"
-            android:textColor="@color/white"
-            android:textSize="28sp" />
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

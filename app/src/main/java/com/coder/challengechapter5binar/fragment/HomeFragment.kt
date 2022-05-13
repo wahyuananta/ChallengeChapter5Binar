@@ -108,7 +108,8 @@ class HomeFragment : Fragment() {
                             dataUser.id,
                             dataUser.username,
                             dataUser.email,
-                            dataUser.password
+                            dataUser.password,
+                            dataUser.uri
                         )
                         val navigateUpdate = HomeFragmentDirections.actionHomeFragmentToProfileFragment(user)
                         findNavController().navigate(navigateUpdate)

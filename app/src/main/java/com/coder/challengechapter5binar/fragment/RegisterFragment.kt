@@ -1,11 +1,13 @@
 package com.coder.challengechapter5binar.fragment
 
+import android.content.ContentResolver
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.coder.challengechapter5binar.R
@@ -16,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+
 
 class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
@@ -36,6 +39,12 @@ class RegisterFragment : Fragment() {
         repository = UserRepository(requireContext())
 
         binding.btnRegister.setOnClickListener {
+            val imageUri: Uri = Uri.parse(
+                ContentResolver.SCHEME_ANDROID_RESOURCE +
+                        "://" + resources.getResourcePackageName(R.drawable.default_profile)
+                        + '/' + resources.getResourceTypeName(R.drawable.default_profile) + '/'
+                        + resources.getResourceEntryName(R.drawable.default_profile)
+            )
             val username = binding.etUsername.text
             val email = binding.etEmail.text
             val password = binding.etPassword.text
@@ -58,7 +67,7 @@ class RegisterFragment : Fragment() {
                     binding.ilKonfirmasiPassword.error = getString(R.string.password_tidak_sama)
                 }
                 else -> {
-                    val user = UserEntity(null, username.toString(), email.toString(), password.toString())
+                    val user = UserEntity(null, username.toString(), email.toString(), password.toString(), imageUri.toString())
 
                     lifecycleScope.launch(Dispatchers.IO) {
                         val result= repository.addUser(user)
