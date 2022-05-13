@@ -1,8 +1,6 @@
 package com.coder.challengechapter5binar.fragment
 
 import android.app.AlertDialog
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.coder.challengechapter5binar.R
 import com.coder.challengechapter5binar.databinding.FragmentProfileBinding
-import com.coder.challengechapter5binar.fragment.LoginFragment.Companion.LOGINUSERNAME
+import com.coder.challengechapter5binar.datastore.UserDataStoreManager
 import com.coder.challengechapter5binar.room.UserEntity
 import com.coder.challengechapter5binar.room.UserRepository
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +24,7 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var repository: UserRepository
     private val args : ProfileFragmentArgs by navArgs()
-    private lateinit var preferences: SharedPreferences
+    private lateinit var pref: UserDataStoreManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,8 +37,10 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preferences = requireContext().getSharedPreferences(LOGINUSERNAME, Context.MODE_PRIVATE)
+//        preferences = requireContext().getSharedPreferences(LOGINUSERNAME, Context.MODE_PRIVATE)
         repository = UserRepository(requireContext())
+
+        pref = UserDataStoreManager(requireContext())
 
         binding.etUsername.setText(args.dataUser.username)
         binding.etUsername.isFocusable = false
@@ -77,7 +77,9 @@ class ProfileFragment : Fragment() {
                 .setMessage("Apakah anda yakin ingin logout?")
                 .setPositiveButton("Ya") { dialog, _ ->
                     dialog.dismiss()
-                    preferences.edit().clear().apply()
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        pref.deleteUserFromPref()
+                    }
                     findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
                 }
                 .setNegativeButton("Batal"){ dialog, _ ->

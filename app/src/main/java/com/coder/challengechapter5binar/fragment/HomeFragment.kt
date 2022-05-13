@@ -1,7 +1,5 @@
 package com.coder.challengechapter5binar.fragment
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,9 +13,12 @@ import com.coder.challengechapter5binar.adapter.UpcomingMovieAdapter
 import com.coder.challengechapter5binar.api.model.ResultPopularMovieResponse
 import com.coder.challengechapter5binar.api.model.ResultUpcomingMovieResponse
 import com.coder.challengechapter5binar.databinding.FragmentHomeBinding
+import com.coder.challengechapter5binar.datastore.UserDataStoreManager
 import com.coder.challengechapter5binar.room.UserEntity
 import com.coder.challengechapter5binar.room.UserRepository
 import com.coder.challengechapter5binar.viewmodel.HomeViewModel
+import com.coder.challengechapter5binar.viewmodel.MainViewModel
+import com.coder.challengechapter5binar.viewmodel.ViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -27,7 +28,8 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding
     private lateinit var repository: UserRepository
     private lateinit var viewModel: HomeViewModel
-    private lateinit var preferences: SharedPreferences
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var pref: UserDataStoreManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,8 +44,12 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         repository = UserRepository(requireContext())
 
-        preferences = requireContext().getSharedPreferences(LoginFragment.LOGINUSERNAME, Context.MODE_PRIVATE)
-        binding!!.tvUsername.text = "${preferences.getString(LoginFragment.USER, null)}"
+        pref = UserDataStoreManager(requireContext())
+        mainViewModel = ViewModelProvider(requireActivity(), ViewModelFactory(pref))[MainViewModel::class.java]
+
+        mainViewModel.getDataStore().observe(viewLifecycleOwner) {
+            binding!!.tvUsername.text = it
+        }
 
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 

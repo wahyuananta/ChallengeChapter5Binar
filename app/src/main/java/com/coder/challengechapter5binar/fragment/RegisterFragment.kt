@@ -15,6 +15,7 @@ import com.coder.challengechapter5binar.room.UserRepository
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
@@ -61,18 +62,9 @@ class RegisterFragment : Fragment() {
 
                     lifecycleScope.launch(Dispatchers.IO) {
                         val result= repository.addUser(user)
-//                        val result= mDb?.repository()?.insertDataUser(dataUser)
-                        activity?.runOnUiThread {
+                        runBlocking(Dispatchers.Main) {
                             if (result != 0.toLong()) {
-//                                val user = UserEntity(
-//                                    null,
-//                                    name.toString(),
-//                                    email.toString(),
-//                                    password.toString()
-//                                )
                                 Toast.makeText(activity, "Registrasi berhasil", Toast.LENGTH_SHORT).show()
-//                                val registerToLogin = RegisterFragmentDirections.actionRegisterFragmentToLoginFragment()
-//                                findNavController().navigate(registerToLogin)
                             } else {
                                 val snackbar = Snackbar.make(it,"Registrasi gagal, coba lagi nanti!", Snackbar.LENGTH_INDEFINITE)
                                 snackbar.setAction("Oke") {

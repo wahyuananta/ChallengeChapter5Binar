@@ -1,31 +1,31 @@
 package com.coder.challengechapter5binar.fragment
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.coder.challengechapter5binar.R
 import com.coder.challengechapter5binar.databinding.FragmentLoginBinding
+import com.coder.challengechapter5binar.datastore.UserDataStoreManager
 import com.coder.challengechapter5binar.room.UserRepository
+import com.coder.challengechapter5binar.viewmodel.MainViewModel
+import com.coder.challengechapter5binar.viewmodel.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
     private lateinit var repository: UserRepository
-
-    companion object {
-        const val LOGINUSERNAME = "login_username"
-        const val USER = "user"
-    }
+    private lateinit var viewModel: MainViewModel
+    private lateinit var pref: UserDataStoreManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,9 +40,13 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         repository = UserRepository(requireContext())
 
-        val preferences = this.activity?.getSharedPreferences(LOGINUSERNAME, Context.MODE_PRIVATE)
-        if (preferences!!.getString(USER, null) != null) {
-            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+        pref = UserDataStoreManager(requireContext())
+        viewModel = ViewModelProvider(requireActivity(), ViewModelFactory(pref))[MainViewModel::class.java]
+
+        viewModel.getDataStore().observe(viewLifecycleOwner) {
+            if (it.toString() != UserDataStoreManager.DEFAULT_USERNAME) {
+                findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+            }
         }
 
         binding.tvRegister.setOnClickListener {
@@ -64,7 +68,7 @@ class LoginFragment : Fragment() {
                     lifecycleScope.launch(Dispatchers.IO) {
                         val result = repository.checkUser(etUsername.toString(), etPassword.toString())
 
-                        activity?.runOnUiThread {
+                        runBlocking(Dispatchers.Main) {
                             if (result == false) {
                                 val snackbar = Snackbar.make(it,"Login gagal, coba periksa email atau password anda", Snackbar.LENGTH_INDEFINITE)
                                 snackbar.setAction("Oke") {
@@ -72,12 +76,12 @@ class LoginFragment : Fragment() {
                                 }
                                 snackbar.show()
                             } else {
-                                val editor : SharedPreferences.Editor = preferences.edit()
-                                editor.putString(USER, etUsername.toString())
-                                editor.apply()
                                 Toast.makeText(context, "Login berhasil", Toast.LENGTH_SHORT).show()
                                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                             }
+                        }
+                        if (result != false){
+                            viewModel.saveDataStore(etUsername.toString())
                         }
                     }
                 }
